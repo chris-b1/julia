@@ -598,7 +598,8 @@ function docerror(@nospecialize ex)
     if isexpr(ex, :macrocall)
         txt *= "\n\n'$(ex.args[1])' not documentable. See 'Base.@__doc__' docs for details."
     end
-    return :($(error)($txt, "\n"))
+    #return :($(error)($txt, "\n"))
+    return ex.args[2]
 end
 
 include("utils.jl")

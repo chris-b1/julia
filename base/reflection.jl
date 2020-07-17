@@ -884,7 +884,7 @@ function methods(@nospecialize(f), @nospecialize(t),
     end
     t = to_tuple_type(t)
     world = typemax(UInt)
-    MethodList(Method[m[3] for m in _methods(f, t, -1, world) if mod === nothing || m[3].module in mod],
+    MethodList(Method[m.method for m in _methods(f, t, -1, world) if mod === nothing || m.method.module in mod],
                typeof(f).name.mt)
 end
 
@@ -898,7 +898,7 @@ function methods_including_ambiguous(@nospecialize(f), @nospecialize(t))
     has_ambig = Int32[0]
     ms = _methods_by_ftype(tt, -1, world, true, min, max, has_ambig)
     ms === false && return false
-    return MethodList(Method[m[3] for m in ms], typeof(f).name.mt)
+    return MethodList(Method[m.method for m in ms], typeof(f).name.mt)
 end
 
 function methods(@nospecialize(f),

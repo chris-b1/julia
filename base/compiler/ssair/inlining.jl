@@ -1079,31 +1079,30 @@ function assemble_inline_todo!(ir::IRCode, sv::OptimizationState)
                 continue
             elseif length(meth) == 1 && only_method !== false
                 if only_method === nothing
-                    only_method = meth[1][3]
-                elseif only_method !== meth[1][3]
+                    only_method = meth[1].method
+                elseif only_method !== meth[1].method
                     only_method = false
                 end
             else
                 only_method = false
             end
             for match in meth::Vector{Any}
-                (metharg, methsp, method) = (match[1]::Type, match[2]::SimpleVector, match[3]::Method)
                 # TODO: This could be better
-                signature_union = Union{signature_union, metharg}
-                if !isdispatchtuple(metharg)
+                signature_union = Union{signature_union, match.metharg}
+                if !isdispatchtuple(match.metharg)
                     fully_covered = false
                     continue
                 end
-                case_sig = Signature(sig.f, sig.ft, sig.atypes, metharg)
-                case = analyze_method!(idx, case_sig, metharg, methsp, method,
+                case_sig = Signature(sig.f, sig.ft, sig.atypes, match.metharg)
+                case = analyze_method!(idx, case_sig, match.metharg, match.methsp, match.method,
                     stmt, sv, false, nothing, calltype)
                 if case === nothing
                     fully_covered = false
                     continue
-                elseif _any(p->p[1] === metharg, cases)
+                elseif _any(p->p[1] === match.metharg, cases)
                     continue
                 end
-                push!(cases, Pair{Any,Any}(metharg, case))
+                push!(cases, Pair{Any,Any}(match.metharg, case))
             end
         end
 
@@ -1119,7 +1118,7 @@ function assemble_inline_todo!(ir::IRCode, sv::OptimizationState)
                     sig.atype, method.sig)::SimpleVector
             else
                 @assert length(meth) == 1
-                (metharg, methsp, method) = (meth[1][1]::Type, meth[1][2]::SimpleVector, meth[1][3]::Method)
+                (metharg, methsp, method) = (meth[1].metharg, meth[1].methsp, meth[1].method)
             end
             fully_covered = true
             case = analyze_method!(idx, sig, metharg, methsp, method,
