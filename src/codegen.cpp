@@ -7494,6 +7494,12 @@ extern "C" void jl_init_llvm(void)
     const char *const argv_avoidsfb[] = {"", "-x86-disable-avoid-SFB"}; // llvm bug 41629, see https://gist.github.com/vtjnash/192cab72a6cfc00256ff118238163b55
     cl::ParseCommandLineOptions(sizeof(argv_avoidsfb)/sizeof(argv_avoidsfb[0]), argv_avoidsfb, "disable-avoidsfb\n");
 #endif
+#if defined(_CPU_ARM_)
+    // Workaround https://bugs.llvm.org/show_bug.cgi?id=46757
+    // Julia issue #36062
+    const char *const argv_lsr[] = {"", "-disable-lsr"};
+    cl::ParseCommandLineOptions(sizeof(argv_lsr)/sizeof(argv_lsr[0]), argv_lsr, "disable-lsr\n");
+#endif
     cl::ParseEnvironmentOptions("Julia", "JULIA_LLVM_ARGS");
 
     // if the patch adding this option has been applied, lower its limit to provide
